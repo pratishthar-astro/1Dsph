@@ -3,9 +3,9 @@ import numpy as np
 
 def cubic_spline_kernel(q):
     if 0 <= q < 1:
-        return 2 / 3 - q**2 + 0.5 * q**3
+        return 2 / 3 * ((1/4) * (2-q)**3 - (1-q)**3)
     elif 1 <= q < 2:
-        return 1 / 6 * (2 - q)**3
+        return 2 / 3 * ((1/4) * (2-q)**3)
     else:
         return 0
 

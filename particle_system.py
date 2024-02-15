@@ -16,7 +16,7 @@ class SPHParticles:
     def setup(self, xmin, xmax, rho_0):
         self.position = np.linspace(xmin, xmax, self.n)
         particle_spacing = (xmax - xmin) / (self.n - 1)
-        self.mass = rho_0 * particle_spacing * np.ones(self.n)
+        self.mass = (rho_0/ self.n) * np.ones(self.n)
         sound_speed = 343.0  # in m/s
         amplitude = 1e-4 * sound_speed
         self.velocity = amplitude * np.sin(2 * np.pi * self.position / (xmax - xmin))
