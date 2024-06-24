@@ -4,7 +4,7 @@ import datetime
 
 
 def output_particles(particles, filename):
-    # Save updated particle properties (including density) to a file
+    # Save updated particle properties to a file
     data = particles
     data.to_csv(filename, index=False)
 
@@ -34,4 +34,5 @@ def print_execution_time(start_time, end_time):
     """
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time:.2f} seconds")
+
 

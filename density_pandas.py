@@ -9,7 +9,6 @@ def get_density(position, mass, smoothing_length, num_neighbors):
             #print("Particle ---------------------------------", i)
             density[i] = compute_density_at_particle(i, position, mass, smoothing_length)
             #print("rho_a", density[i])
-
     return density
 
 def compute_density_at_particle(particle_index, position, mass, smoothing_length):
@@ -35,30 +34,31 @@ def equation_of_state(density, sound_speed):
     pressure = sound_speed**2 * density
     return pressure
 
-def compute_numerical_gradient(kernel_func, q, delta=1e-6):
+def compute_gradient_q(q):
     # Compute the gradient numerically using central difference
-    return (kernel_func(q + delta) - kernel_func(q - delta)) / (2 * delta)
+    if 0 <= q < 1:
+        return 2 / 3 * (-3*(q) +2.25*(q**2))
+    elif 1 <= q < 2:
+        return -2 / 3 * ((3/4) * (2-q)**2)
+    else:
+        return 0
 
 def get_accel(position, pressure, density, mass, smoothing_length, num_neighbors):
     # Initialize the viscosity terms to zero
     q_ab_a = 0.0
-    q_ab = 0.0
+    q_ab_b = 0.0
 
     n_particles = len(position)  # Use the given n_particles
     accelerations = np.zeros(n_particles)
 
     # Compute the acceleration for each particle using the given formula
     for i in range(n_particles):
+        accel = np.zeros_like(position[i])
         pos_i = position[i]
         rho_i = density[i]
         P_i = pressure[i]
         h_i = smoothing_length[i]
-        #if i == 11:
-            #print('density', rho_i)
-            #print('position', pos_i)
-            #print('P_i', P_i)
-            #print('h', h_i)
-        accel = 0.0
+        #accel = 0.0
         # Small epsilon to avoid division-by-zero IN CASE NEEDED with rho_i/rho_j
         # epsilon = 1e-8
     
@@ -73,35 +73,35 @@ def get_accel(position, pressure, density, mass, smoothing_length, num_neighbors
                 q_i = abs(r_ij) / h_i
                 q_j = abs(r_ij) / h_j
                 
-                W_grad_i = compute_numerical_gradient(cubic_spline_kernel, q_i)
-                W_grad_j = compute_numerical_gradient(cubic_spline_kernel, q_j)
-
-                print(rho_i)
-                print(rho_j)
-
-                print(P_i)
-                print(P_j)
+                W_grad_i = np.sign(r_ij)*compute_gradient_q(q_i)/((h_i**2))
+                W_grad_j = np.sign(r_ij)*compute_gradient_q(q_j)/((h_j**2))
                     
                 term_1 = (P_i + q_ab_a) * W_grad_i/ (rho_i ** 2)
-                term_2 = (P_j + q_ab) * W_grad_j/ (rho_j ** 2)
-
+                term_2 = (P_j + q_ab_b) * W_grad_j/ (rho_j ** 2)
+                    
                 # Accumulate the contributions to acceleration
                 accel += mass * (term_1 + term_2)
-
-
+                
                 #if i == 11:
-                    #print('r', r_ij)
-                    #print('W', W_grad)
-                    #print('rho j', rho_j)
-                    #print('Q', q)
-                    #print('hij', h_ij)
-                    #print('term1', term_1)
-                    #print('term2', term_2)
-                    #print('a', accel)
+                #    print('particle -----------', j)
+                #    print('density a', rho_i)
+                #    print('density b', rho_j)
+                #    print('r_ab', r_ij)
+                #    print('qa', q_i)
+                #    print('qb', q_j)
+                #    print('nabla_ab_a', W_grad_i)
+                #    print('nabla_ab_b', W_grad_j)
+                #    print('term1', term_1)
+                #    print('term2', term_2)
+                #    print('mass', mass)
+                #    print('acc', accel)
+
+
                     
         # Assign the calculated acceleration
         accelerations[i] = -accel  # Negative due to pressure gradients
-
+        #if i == 11:
+            #print('-------------------------------------------final a', accelerations[i])
     return accelerations
 
 

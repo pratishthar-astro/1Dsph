@@ -5,7 +5,7 @@ class SPHParticles:
     def __init__(self, n):
         self.n = n
         self.mass = None
-        self.data = pd.DataFrame(columns=['Position', 'Velocity', 'Smoothing_Length', 'Internal_Energy', 'Pressure', 'Density'])
+        self.data = pd.DataFrame(columns=['Position', 'Velocity', 'Smoothing_Length', 'Pressure', 'Density'])
         #print(len(self.data))
 
     def setup(self, xmin, xmax, rho_0, num_neighbors):
