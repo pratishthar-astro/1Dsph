@@ -2,10 +2,14 @@
 import numpy as np
 import datetime
 
-
-def output_particles(particles, filename):
-    # Save updated particle properties to a file
+def output_particles(particles, filename, include_ghosts):
+    print(particles)
+    # Exclude ghost particles if the flag is set to False
+    if include_ghosts == False:
+        particles = particles[particles['Is_Ghost'] == False]
+    print(particles)
     data = particles
+    # Save the DataFrame to a CSV file
     data.to_csv(filename, index=False)
 
 
